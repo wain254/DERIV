@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SBF Traders Hub – Smart Trading</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #080b16;
+            color: #e8edf5;
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 28px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+        }
+        .brand .accent { color: #ff6a3d; }
+        .brand .mark {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff6a3d, #ffb020);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            text-align: center;
+            line-height: 32px;
+            font-size: 14px;
+            font-family: 'JetBrains Mono', monospace;
+            color: #1a1204;
+            margin-right: 8px;
+        }
+        .login-btn {
+            background: #2f8cff;
+            color: #fff;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 8px 24px rgba(47,140,255,0.3);
+        }
+        .login-btn:hover { background: #1a73e8; transform: scale(1.02); }
+
+        /* Hero */
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 60px 0 40px;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        .hero-text { flex: 1; min-width: 280px; }
+        .hero-text h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 48px;
+            line-height: 1.05;
+            margin-bottom: 16px;
+        }
+        .hero-text h1 .highlight {
+            background: linear-gradient(100deg, #ff6a3d, #ffb020);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .hero-text p {
+            font-size: 18px;
+            color: #aab2cc;
+            max-width: 480px;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .hero-actions .btn-ghost {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #e8edf5;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .hero-actions .btn-ghost:hover { background: rgba(255,255,255,0.05); }
+
+        .hero-visual {
+            flex: 1;
+            min-width: 280px;
+            background: linear-gradient(145deg, #141b2b, #0e1326);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6);
+        }
+        .hero-visual .stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+        }
+        .hero-visual .stat:last-child { border-bottom: none; }
+        .hero-visual .stat .label { color: #6b7394; }
+        .hero-visual .stat .value { color: #00d8e8; }
+
+        /* Features */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            padding: 40px 0 60px;
+        }
+        .feature-card {
+            background: #141b2b;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 28px 20px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: #2f8cff;
+        }
+        .feature-card .icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+        .feature-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        .feature-card p {
+            color: #aab2cc;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 24px 0;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            color: #4a5a7a;
+            font-size: 13px;
+        }
+        .footer a { color: #2f8cff; text-decoration: none; }
+
+        @media (max-width: 640px) {
+            .hero-text h1 { font-size: 34px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="brand">
+                <span class="mark">SBF</span>SBF<span class="accent">Traders Hub</span>
+            </div>
+            <button class="login-btn" onclick="startLogin()">
+                🔐 Login with Deriv
+            </button>
+        </header>
+
+        <!-- Hero -->
+        <div class="hero">
+            <div class="hero-text">
+                <h1>Trade smarter with <span class="highlight">AI‑powered insights</span></h1>
+                <p>
+                    Access real‑time market scanning, free trading bots, and advanced analysis tools —
+                    all from one platform. No downloads, no hassle.
+                </p>
+                <div class="hero-actions">
+                    <button class="login-btn" onclick="startLogin()" style="font-size:16px; padding:14px 32px;">
+                        Get Started Free
+                    </button>
+                    <button class="btn-ghost">See how it works</button>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="stat"><span class="label">Markets scanned</span><span class="value">14</span></div>
+                <div class="stat"><span class="label">AI confidence</span><span class="value">94%</span></div>
+                <div class="stat"><span class="label">Top pick</span><span class="value">Volatility 100</span></div>
+                <div class="stat"><span class="label">Bots active</span><span class="value">24</span></div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="features">
+            <div class="feature-card">
+                <div class="icon">🧠</div>
+                <h3>AI Analysis</h3>
+                <p>Our AI scans every synthetic index in real time and gives you the best trade to take, with confidence scores and entry levels.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">🤖</div>
+                <h3>Free Trading Bots</h3>
+                <p>Access a library of pre‑built bots that work on our platform — they run exclusively on SBF Traders Hub and cannot be downloaded.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">📊</div>
+                <h3>Analysis Tool</h3>
+                <p>Get detailed breakdowns of digit bias, momentum, win rates, and more for every asset class — all in one place.</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            &copy; 2026 SBF Traders Hub. All rights reserved. &nbsp;|&nbsp; <a href="#">Privacy</a> &nbsp;|&nbsp; <a href="#">Terms</a>
+        </footer>
+    </div>
+
+    <script>
+        function startLogin() {
+            // Redirect to your FastAPI OAuth endpoint
+            window.location.href = '/auth/login';
+        }
+    </script>
+</body>
+</html>

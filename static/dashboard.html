@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SBF Traders Hub – Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ----- Same styles as before, unchanged ----- */
+  :root{
+    --bg-0:#080b16;
+    --bg-1:#0e1326;
+    --bg-2:#151b33;
+    --card:#1a2140;
+    --card-hi:#212a4d;
+    --line:rgba(255,255,255,0.08);
+    --text-0:#f4f6fb;
+    --text-1:#aab2cc;
+    --text-2:#6b7394;
+    --orange:#ff6a3d;
+    --orange-2:#ff8a5c;
+    --blue:#2f8cff;
+    --cyan:#00d8e8;
+    --green:#17c785;
+    --red:#ff4d5e;
+    --gold:#ffb020;
+    --disp:'Space Grotesk', sans-serif;
+    --body:'Inter', sans-serif;
+    --mono:'JetBrains Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg-0);color:var(--text-0);font-family:var(--body);height:100%;}
+  body{overflow-x:hidden;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:var(--body);cursor:pointer;}
+  .screen{display:none;min-height:100vh;}
+  .screen.active{display:block;}
+
+  /* ---------------- DASHBOARD ---------------- */
+  #dashboard{background:var(--bg-0);min-height:100vh;}
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 28px;border-bottom:1px solid var(--line);
+    background:var(--bg-1);position:sticky;top:0;z-index:20;
+  }
+  .topbar-left{display:flex;align-items:center;gap:34px;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--disp);font-weight:700;font-size:18px;letter-spacing:0.2px;}
+  .brand .db{color:var(--orange);}
+  .brand .mark{width:26px;height:26px;border-radius:9px;background:linear-gradient(135deg,var(--orange),var(--gold));display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:600;font-size:11px;color:#1a1204;}
+  .navlinks{display:flex;align-items:center;gap:6px;}
+  .navlink{
+    display:flex;align-items:center;gap:7px;padding:9px 13px;border-radius:9px;
+    font-size:13.5px;color:var(--text-1);font-weight:500;white-space:nowrap;
+  }
+  .navlink .ic{font-size:14px;}
+  .navlink.active{background:rgba(255,106,61,0.12);color:var(--orange-2);}
+  .navlink:hover:not(.active){background:rgba(255,255,255,0.04);color:var(--text-0);}
+  .balance-pill{
+    display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);
+    padding:9px 16px;border-radius:20px;font-family:var(--mono);font-size:14px;color:var(--cyan);
+  }
+
+  .dash-body{max-width:1320px;margin:0 auto;padding:36px 28px 120px;}
+  .dash-hero{margin-bottom:30px;}
+  .dash-hero h1{font-family:var(--disp);font-size:32px;margin:0 0 6px;}
+  .dash-hero p{color:var(--text-1);margin:0;font-size:14.5px;}
+
+  .quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:36px;}
+  .qcard{
+    background:var(--card);border:1px solid var(--line);border-top:3px solid var(--accent,var(--orange));
+    border-radius:14px;padding:20px;transition:transform .15s ease, background .15s ease;
+  }
+  .qcard:hover{transform:translateY(-3px);background:var(--card-hi);}
+  .qcard .qicon{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:14px;}
+  .qcard h4{margin:0 0 5px;font-size:15.5px;}
+  .qcard p{margin:0 0 12px;color:var(--text-1);font-size:12.5px;line-height:1.5;}
+  .qcard .open{font-size:12.5px;font-weight:600;color:var(--accent,var(--orange));}
+
+  .panel-row{display:grid;grid-template-columns:2fr 1fr;gap:20px;}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;}
+  .panel h3{margin:0 0 4px;font-family:var(--disp);font-size:17px;}
+  .panel .hint{color:var(--text-2);font-size:12.5px;margin-bottom:18px;}
+  .empty-chart{
+    height:220px;border-radius:12px;border:1px dashed var(--line);
+    display:flex;align-items:center;justify-content:center;color:var(--text-2);font-size:13px;font-family:var(--mono);
+  }
+  .summary-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:13.5px;}
+  .summary-row:last-child{border-bottom:none;}
+  .summary-row span:first-child{color:var(--text-1);}
+  .summary-row span:last-child{font-family:var(--mono);font-weight:600;}
+
+  .risk-bar{
+    position:fixed;left:20px;bottom:20px;z-index:30;
+    background:rgba(255,176,32,0.12);border:1px solid rgba(255,176,32,0.35);color:var(--gold);
+    padding:10px 16px;border-radius:10px;font-size:12.5px;display:flex;align-items:center;gap:8px;
+  }
+
+  .ai-orb{
+    position:fixed;right:26px;bottom:26px;z-index:40;
+    width:60px;height:60px;border-radius:50%;
+    background:radial-gradient(circle at 32% 28%,#c084ff,#7b2ff7 60%,#5a0fd6);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 12px 30px -6px rgba(123,47,247,0.6), 0 0 0 4px rgba(123,47,247,0.12);
+    border:none;color:#fff;font-family:var(--disp);font-weight:700;font-size:18px;
+    animation:float 3.2s ease-in-out infinite;
+  }
+  .ai-orb::after{
+    content:'';position:absolute;width:12px;height:12px;background:var(--green);border-radius:50%;
+    right:2px;bottom:2px;border:2px solid var(--bg-0);
+  }
+  @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+  .ai-orb:hover{filter:brightness(1.1);}
+
+  .modal-veil{
+    position:fixed;inset:0;background:rgba(4,6,14,0.72);backdrop-filter:blur(3px);
+    display:none;align-items:center;justify-content:center;z-index:50;padding:20px;
+  }
+  .modal-veil.active{display:flex;}
+  .modal{
+    width:100%;max-width:640px;background:var(--bg-1);border:1px solid var(--line);
+    border-radius:18px;overflow:hidden;box-shadow:0 40px 90px -20px rgba(0,0,0,0.7);
+  }
+  .modal-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 24px;border-bottom:1px solid var(--line);
+    background:linear-gradient(100deg,rgba(123,47,247,0.18),rgba(47,140,255,0.1));
+  }
+  .modal-head h3{margin:0;font-family:var(--disp);font-size:18px;display:flex;align-items:center;gap:10px;}
+  .modal-close{background:none;border:none;color:var(--text-1);font-size:20px;line-height:1;padding:4px;}
+  .modal-body{padding:26px 24px;}
+
+  .scan-stage{display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 10px 6px;}
+  .scan-ring{position:relative;width:110px;height:110px;margin-bottom:22px;}
+  .scan-ring svg{width:100%;height:100%;transform:rotate(-90deg);}
+  .scan-ring circle{fill:none;stroke-width:6;}
+  .scan-ring .bg{stroke:rgba(255,255,255,0.07);}
+  .scan-ring .fg{stroke:url(#gradScan);stroke-linecap:round;transition:stroke-dashoffset .25s linear;}
+  .scan-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:600;font-size:19px;}
+  .scan-line{font-family:var(--mono);font-size:13px;color:var(--text-1);min-height:18px;margin-bottom:4px;}
+  .scan-list{width:100%;margin-top:18px;display:flex;flex-direction:column;gap:8px;}
+  .scan-item{
+    display:flex;align-items:center;justify-content:space-between;
+    background:rgba(255,255,255,0.03);border:1px solid var(--line);border-radius:10px;
+    padding:10px 14px;font-size:13px;opacity:0;transform:translateY(6px);
+    animation:rise .4s ease forwards;
+  }
+  @keyframes rise{to{opacity:1;transform:translateY(0);}}
+  .scan-item .mkt{color:var(--text-0);font-weight:500;}
+  .scan-item .score{font-family:var(--mono);color:var(--text-2);}
+
+  .result-badge{
+    display:inline-flex;align-items:center;gap:8px;background:rgba(23,199,133,0.12);
+    border:1px solid rgba(23,199,133,0.35);color:var(--green);font-family:var(--mono);
+    font-size:12px;padding:6px 12px;border-radius:20px;margin-bottom:16px;
+  }
+  .result-market{font-family:var(--disp);font-size:24px;margin:0 0 4px;}
+  .result-sub{color:var(--text-1);font-size:13.5px;margin-bottom:20px;}
+  .result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px;}
+  .result-stat{background:rgba(255,255,255,0.03);border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center;}
+  .result-stat .rl{font-size:10.5px;color:var(--text-2);font-family:var(--mono);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;}
+  .result-stat .rv{font-family:var(--mono);font-weight:600;font-size:16px;}
+  .modal-actions{display:flex;gap:12px;}
+  .modal-actions .btn{flex:1;justify-content:center;}
+  .disclaimer-note{margin-top:16px;font-size:11px;color:var(--text-2);line-height:1.5;}
+
+  @media (max-width:880px){
+    .quick-grid{grid-template-columns:repeat(2,1fr);}
+    .panel-row{grid-template-columns:1fr;}
+    .navlinks{display:none;}
+  }
+
+  /* Logout button */
+  .logout-btn {
+    color: var(--text-2);
+    background: none;
+    border: 1px solid var(--line);
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: var(--body);
+    font-weight: 500;
+  }
+  .logout-btn:hover {
+    background: rgba(255,255,255,0.05);
+    color: var(--text-0);
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= DASHBOARD ================= -->
+<div id="dashboard" class="screen active">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="brand"><span class="mark">SBF</span>SBF<span class="db">Traders Hub</span></div>
+      <div class="navlinks">
+        <div class="navlink active"><span class="ic">🏠</span>Dashboard</div>
+        <div class="navlink"><span class="ic">🤖</span>Bot Builder</div>
+        <div class="navlink"><span class="ic">🎁</span>Free Bots</div>
+        <div class="navlink"><span class="ic">⚡</span>Speedbot</div>
+        <div class="navlink"><span class="ic">✨</span>AI Software</div>
+        <div class="navlink"><span class="ic">💼</span>Auto Trader</div>
+        <div class="navlink"><span class="ic">🔍</span>Analysis Tool</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div class="balance-pill">💰 9,164.88 USD</div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="dash-body">
+    <div class="dash-hero">
+      <h1>Welcome back, DOT92974900 👋</h1>
+      <p>"Risk comes from not knowing what you're doing." — Warren Buffett</p>
+    </div>
+
+    <div class="quick-grid">
+      <div class="qcard" style="--accent:#ff6a3d;">
+        <div class="qicon">📁</div>
+        <h4>Upload Bot</h4>
+        <p>Import an XML bot from your computer.</p>
+        <div class="open">Open →</div>
+      </div>
+      <div class="qcard" style="--accent:#17c785;">
+        <div class="qicon">🤖</div>
+        <h4>Free Bots</h4>
+        <p>Browse ready-made trading strategies.</p>
+        <div class="open">Open →</div>
+      </div>
+      <div class="qcard" style="--accent:#7b2ff7;">
+        <div class="qicon">🧩</div>
+        <h4>Bot Editor</h4>
+        <p>Build a custom bot with the visual editor.</p>
+        <div class="open">Open →</div>
+      </div>
+      <div class="qcard" style="--accent:#ffb020;">
+        <div class="qicon">⚡</div>
+        <h4>Quick Strategy</h4>
+        <p>Start fast with a pre-built strategy template.</p>
+        <div class="open">Open →</div>
+      </div>
+    </div>
+
+    <div class="panel-row">
+      <div class="panel">
+        <h3>Session summary</h3>
+        <div class="hint">When you're ready to trade, hit Run — you'll track your bot's performance here.</div>
+        <div class="empty-chart">No trades placed in this session yet</div>
+      </div>
+      <div class="panel">
+        <h3>Account</h3>
+        <div class="hint">Today, 14:17 GMT</div>
+        <div class="summary-row"><span>Total stake</span><span>0.00 USD</span></div>
+        <div class="summary-row"><span>Total payout</span><span>0.00 USD</span></div>
+        <div class="summary-row"><span>No. of runs</span><span>0</span></div>
+        <div class="summary-row"><span>Contracts won</span><span>0</span></div>
+        <div class="summary-row"><span>Contracts lost</span><span>0</span></div>
+        <div class="summary-row"><span>Total profit/loss</span><span>0.00 USD</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="risk-bar">⚠️ Trading carries risk. Only trade with funds you can afford to lose.</div>
+
+  <button class="ai-orb" onclick="openScan()" title="Run AI market scan">AI</button>
+</div>
+
+<!-- ================= AI SCAN MODAL ================= -->
+<div class="modal-veil" id="modalVeil">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>✨ AI Market Scanner</h3>
+      <button class="modal-close" onclick="closeScan()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+/* ---------- AI scan: calls backend API ---------- */
+function openScan(){
+  document.getElementById('modalVeil').classList.add('active');
+  runScanAnimation();
+}
+function closeScan(){
+  document.getElementById('modalVeil').classList.remove('active');
+}
+
+async function runScanAnimation(){
+  const body=document.getElementById('modalBody');
+  body.innerHTML=`
+    <div class="scan-stage">
+      <div class="scan-ring">
+        <svg viewBox="0 0 120 120">
+          <defs>
+            <linearGradient id="gradScan" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#2f8cff"/>
+              <stop offset="100%" stop-color="#00d8e8"/>
+            </linearGradient>
+          </defs>
+          <circle class="bg" cx="60" cy="60" r="52"></circle>
+          <circle class="fg" id="scanCircle" cx="60" cy="60" r="52" stroke-dasharray="327" stroke-dashoffset="327"></circle>
+        </svg>
+        <div class="scan-pct" id="scanPct">0%</div>
+      </div>
+      <div class="scan-line" id="scanLine">Connecting to server...</div>
+      <div class="scan-list" id="scanList"></div>
+    </div>
+  `;
+
+  const circle=document.getElementById('scanCircle');
+  const pctEl=document.getElementById('scanPct');
+  const lineEl=document.getElementById('scanLine');
+  const listEl=document.getElementById('scanList');
+  const CIRC=327;
+
+  let progress=0;
+  const interval=setInterval(()=>{
+    progress=Math.min(progress+4,95);
+    circle.style.strokeDashoffset=CIRC - (CIRC*progress/100);
+    pctEl.textContent=progress+'%';
+    if(progress>70) lineEl.textContent='Analysing markets...';
+  },80);
+
+  try {
+    const response = await fetch('/api/scan');
+    const data = await response.json();
+
+    clearInterval(interval);
+    progress=100;
+    circle.style.strokeDashoffset=CIRC - (CIRC*progress/100);
+    pctEl.textContent='100%';
+    lineEl.textContent='Scan complete.';
+
+    data.all_markets.forEach((m,i)=>{
+      const item=document.createElement('div');
+      item.className='scan-item';
+      item.style.animationDelay=(i*0.05)+'s';
+      item.innerHTML=`<span class="mkt">${m.name}</span><span class="score">score ${m.score}</span>`;
+      listEl.appendChild(item);
+    });
+
+    setTimeout(()=>{ showResultFromBackend(data); },400);
+
+  } catch(err) {
+    clearInterval(interval);
+    lineEl.textContent='⚠️ Error connecting to backend. Please try again.';
+    console.error('Scan error:', err);
+  }
+}
+
+function showResultFromBackend(data){
+  const best=data.best;
+  const body=document.getElementById('modalBody');
+  body.innerHTML=`
+    <div class="result-badge">✓ Best market identified</div>
+    <h2 class="result-market">${best.name}</h2>
+    <div class="result-sub">Recommended trade type: <strong>${best.type}</strong> · Confidence score ${best.score}/100</div>
+    <div class="result-grid">
+      <div class="result-stat"><div class="rl">Digit / trend bias</div><div class="rv">${best.bias}</div></div>
+      <div class="result-stat"><div class="rl">Recent win rate</div><div class="rv">${best.win_rate}%</div></div>
+      <div class="result-stat"><div class="rl">Markets compared</div><div class="rv">${data.total_scanned}</div></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="closeScan()">Load into Auto Trader</button>
+      <button class="btn btn-ghost" onclick="runScanAnimation()">Re-scan</button>
+    </div>
+    <div class="disclaimer-note">This is a simulated scan for demonstration. In production, this would use real Deriv market data.</div>
+  `;
+}
+
+/* ---------- Logout ---------- */
+function logout() {
+  if (confirm('Are you sure you want to logout?')) {
+    // Clear session cookie by redirecting to a logout endpoint (optional)
+    // For simplicity, we just redirect to / and the cookie will be invalidated on the server.
+    // A better way: call /auth/logout and clear the session.
+    window.location.href = '/';
+  }
+}
+
+/* ---------- Sidebar active state (cosmetic) ---------- */
+document.querySelectorAll('.navlink').forEach(item => {
+  item.addEventListener('click', function() {
+    document.querySelectorAll('.navlink').forEach(i => i.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+/* ---------- Quick action buttons (demo) ---------- */
+document.querySelectorAll('.qcard .open').forEach(btn => {
+  btn.addEventListener('click', () => {
+    alert('🔧 Feature coming soon! This is a UI demo.');
+  });
+});
+
+console.log('🚀 SBF Traders Hub dashboard loaded.');
+</script>
+</body>
+</html>
